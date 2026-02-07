@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pandas_clone"
+version = "0.1.0"
+description = "Reimplementation of core Pandas concepts (Series, DataFrame, Index)"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = ["numpy"]
+
+[tool.black]
+line-length = 88
+
+[tool.ruff]
+select = ["E", "F", "I"]
+line-length = 88
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
