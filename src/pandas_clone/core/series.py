@@ -66,3 +66,31 @@ class Series:
     def __repr__(self) -> str:
         return f"Series(values={self._values.tolist()}, index={self.index})"
     
+    def reindex(self, new_index: Index) -> "Series":
+        """
+        Align values to new_index. Missing labels become NaN
+        """
+        old_pos = self.index.position_map()
+        out = np.full(len(new_index), np.nan, dtype=float)
+
+        for j, label in enumerate(new_index):
+            i = old_pos.get(label)
+            if i is not None:
+                out[j] = float(self._values[i])
+        
+        return Series(out, new_index)
+    
+    def __add__(self, other:"Series") -> "Series":
+        """
+        Aligned addition; union of indexes + NaN for missing.
+        """
+        if not isinstance(other, Series):
+            return NotImplemented
+        
+        new_index = self.index.union(other.index)
+        a = self.reindex(new_index)
+        b = other.reindex(new_index)
+
+        # numpy addition: NaN propagates naturally
+        return Series(a._values + b._values, new_index)
+    

@@ -57,4 +57,44 @@ class Index:
             return False
         return bool(np.array_equal(self._values, other._values))
     
+    
+    def position_map(self) -> dict[object, int]:
+        """
+        Map label -> first position in the index.
+        (Pandas allows duplicates, but for v0.x keep 'first occurence'.)
+        """
+
+        pos = {}
+        for i, label in enumerate(self._values.tolist()):
+            if label not in pos:
+                pos[label] = i
+        return pos
+    
+    def union(self, other: "Index") -> "Index":
+        """
+        Return the union of two Index objects (unique labels, order preserved).
+        Order rule (simple v0.x):
+            - keep labels from self in order
+            - then add labels from other that re not already present
+        """
+
+        seen = set()
+        out = []
+
+        for x in self._values.tolist():
+            if x not in seen:
+                out.append(x)
+                seen.add(x)
+
+        for x in other._values.tolist():
+            if x not in seen:
+                out.append(x)
+                seen.add(x)
+        
+        return Index(out)
+    
+    def __iter__(self):
+        return iter(self._values.tolist())
+    
+    
 
