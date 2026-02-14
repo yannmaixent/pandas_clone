@@ -71,25 +71,15 @@ class Index:
         return pos
     
     def union(self, other: "Index") -> "Index":
-        """
-        Return the union of two Index objects (unique labels, order preserved).
-        Order rule (simple v0.x):
-            - keep labels from self in order
-            - then add labels from other that re not already present
-        """
-
-        seen = set()
         out = []
 
         for x in self._values.tolist():
-            if x not in seen:
+            if x not in out:
                 out.append(x)
-                seen.add(x)
-
+        
         for x in other._values.tolist():
-            if x not in seen:
+            if x not in out:
                 out.append(x)
-                seen.add(x)
         
         return Index(out)
     

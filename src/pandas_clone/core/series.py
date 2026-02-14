@@ -9,6 +9,7 @@ from .index import Index
 
 Key = Union[int, slice, np.ndarray]
 
+############# class Series
 @dataclass
 class Series:
     """
@@ -80,19 +81,25 @@ class Series:
         
         return Series(out, new_index)
     
-    def __add__(self, other:"Series") -> "Series":
-        """
-        Aligned addition; union of indexes + NaN for missing.
-        """
+    def _binary_op(self, other: "Series", op):
         if not isinstance(other, Series):
             return NotImplemented
-        
         new_index = self.index.union(other.index)
-        a = self.reindex(new_index)
-        b = other.reindex(new_index)
 
-        # numpy addition: NaN propagates naturally
-        return Series(a._values + b._values, new_index)
+        a = self.reindex(new_index)
+        b= other.reindex(new_index)
+
+        result = op(a._values, b._values)
+        return Series(result, new_index)    
+    
+    def __add__(self, other):
+        return self._binary_op(other, lambda a, b: a + b)
+    
+    def __sub__(self, other):
+        return self._binary_op(other, lambda a, b: a - b)
+    
+    def __mul__(self, other):
+        return self._binary_op(other, lambda a, b: a * b)
     
     @property
     def loc(self):
@@ -103,6 +110,7 @@ class Series:
         return _IlocIndexer(self)
 
 
+############# class _LocIndexer
 class _LocIndexer:
     def __init__(self, series):
         self._series = series
@@ -112,11 +120,13 @@ class _LocIndexer:
         if pos is None:
             raise KeyError(key)
         return float(self._series._values[pos])
-    
+
+
+
+############# class _IlocIndexer    
 class _IlocIndexer:
     def __init__(self, series):
         self._series = series
     
     def __getitem__(self, key):
         return float(self._series._values[key])
-

@@ -26,4 +26,7 @@ s2 = Series([1, 2, 3], Index(["b", "c", "d"]))
 print("s1:", s1)
 print("s2", s2)
 print("s1+s2:", s1 + s2)
+
+
+print(Index(["a", "b", "c"]).union(Index(["b", "c", "d"])))
 print("DEMO END")

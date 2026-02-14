@@ -60,3 +60,25 @@ def test_dataframe_iloc():
 
     row = df.iloc[1]
     assert row["price"].iloc[0] == 20.0
+
+def test_dataFrame_add():
+    df1 = DataFrame(
+        {
+            "price": [10, 20, 30],
+            "volume": [100, 200, 300],
+        },
+        Index(["a", "b", "c"]),
+    )
+
+    df2 = DataFrame(
+        {
+            "price": [1, 2, 3],
+            "volume": [10, 20, 30],
+        },
+        Index(["b", "c", "d"]),
+    )
+
+    r = df1 + df2
+
+    assert r.index == Index(["a", "b", "c", "d"])
+    assert r["price"].iloc[1] == 21.0

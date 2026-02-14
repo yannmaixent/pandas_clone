@@ -59,3 +59,31 @@ def test_series_loc():
 def test_series_iloc():
     s = Series([10, 20, 30])
     assert s.iloc[1] == 20.0
+
+
+def test_series_sub_and_mul():
+    s1 = Series([10, 20, 30], Index(["a", "b", "c"]))
+    s2 = Series([1, 2, 3], Index(["b", "c", "d"]))
+
+    r_sub = s1 - s2
+    r_mul = s1 * s2
+
+    assert r_sub.index == Index(["a", "b", "c", "d"])
+    assert r_mul.index == Index(["a", "b", "c", "d"])
+
+    vals_sub = r_sub.to_numpy()
+    vals_mul = r_mul.to_numpy()
+
+    #a missing in s2 -> NaN
+    assert np.isnan(vals_sub[0]) and np.isnan(vals_mul[0])
+
+    # b: 20 - 1 , 20*1
+    assert vals_sub[1] == 19.0
+    assert vals_mul[1] == 20.0
+
+    # c: 30-2, 30*2
+    assert vals_sub[2] == 28.0
+    assert vals_mul[2] == 60.0
+
+    # d : missing in s1 -> NaN
+    assert np.isnan(vals_sub[3]) and np.isnan(vals_mul[3])

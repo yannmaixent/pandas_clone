@@ -25,7 +25,7 @@ class DataFrame:
             index = Index(range(length))
 
         if len(index) != length:
-            raise ValueError("Index length must macth data length")
+            raise ValueError("Index length must match data length")
         
         self.index = index
         self._data: Dict[str, Series] = {}
@@ -70,6 +70,21 @@ class DataFrame:
         return _DFILocIndexer(self)
 
 
+    def __add__(self, other):
+        if not isinstance(other, DataFrame):
+            return NotImplemented
+
+        new_index = self.index.union(other.index)
+        new_columns = set(self.columns).intersection(other.columns)
+        
+        result = {}
+
+        for col in new_columns:
+            s1 = self._data[col].reindex(new_index)
+            s2 = other._data[col].reindex(new_index)
+            result[col] = s1._values + s2._values
+
+        return DataFrame(result, new_index)
 
 
 
