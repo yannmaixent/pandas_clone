@@ -94,3 +94,29 @@ class Series:
         # numpy addition: NaN propagates naturally
         return Series(a._values + b._values, new_index)
     
+    @property
+    def loc(self):
+        return _LocIndexer(self)
+    
+    @property
+    def iloc(self):
+        return _IlocIndexer(self)
+
+
+class _LocIndexer:
+    def __init__(self, series):
+        self._series = series
+    
+    def __getitem__(self, key):
+        pos =self._series.index.position_map().get(key)
+        if pos is None:
+            raise KeyError(key)
+        return float(self._series._values[pos])
+    
+class _IlocIndexer:
+    def __init__(self, series):
+        self._series = series
+    
+    def __getitem__(self, key):
+        return float(self._series._values[key])
+

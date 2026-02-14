@@ -51,3 +51,11 @@ def test_series_add_aligns_by_index():
     assert vals[1] == 21.0      # 20 + 1
     assert vals[2] == 32.0      # 30 + 2
     assert np.isnan(vals[3])    # "d" missing in s1
+
+def test_series_loc():
+    s = Series([10, 20, 30], Index(["a", "b", "c"]))
+    assert s.loc["b"] == 20.0
+
+def test_series_iloc():
+    s = Series([10, 20, 30])
+    assert s.iloc[1] == 20.0

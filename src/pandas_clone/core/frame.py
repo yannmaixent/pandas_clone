@@ -61,3 +61,44 @@ class DataFrame:
         col_str = ", ".join(self.columns)
         return f"DataFrame(columns=[{col_str}], index={self.index})"
     
+    @property
+    def loc(self):
+        return _DFLocIndexer(self)
+    
+    @property
+    def iloc(self):
+        return _DFILocIndexer(self)
+
+
+
+
+
+class _DFLocIndexer():
+    def __init__(self, df):
+        self._df = df
+
+    def __getitem__(self, key):
+        pos = self._df.index.position_map().get(key)
+        if pos is None:
+            raise KeyError(key)
+        
+        return DataFrame(
+            {col: [series._values[pos]] for col, series in self._df._data.items()},
+            index = Index([key]),
+        )
+    
+
+
+class _DFILocIndexer():
+    def __init__(self, df):
+        self._df = df
+    
+    def __getitem__(self, key):
+        return DataFrame(
+            {col: [series._values[key]] for col, series in self._df._data.items()},
+            index = Index([self._df.index[key]]),
+        )
+
+
+
+    
